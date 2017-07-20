@@ -292,6 +292,8 @@ Router.prototype.dispatch = function (req, res, next) {
  */
 Router.prototype.extendExpress = function (app) {
   var methods = require('methods');
+  var Path = require('path');
+
   this.expressMode = true;
   app.namedRoutes = this;
   app._routingContext = [];
@@ -302,6 +304,7 @@ Router.prototype.extendExpress = function (app) {
       if ('get' == method && 1 == arguments.length && typeof key == 'string') return this.set(key);
       var args = this._routingContext.concat([].slice.call(arguments));
       var path = args[0];
+      var appPath = app.mountpath;
       var name = "";
       // Check if second argument is the route name
       if (typeof args[1] == 'string') {
@@ -311,7 +314,7 @@ Router.prototype.extendExpress = function (app) {
           next();
         };
       }
-      this.namedRoutes.add(method, path, [], {name: name});
+      this.namedRoutes.add(method, Path.join(appPath, path), [], {name: name});
       return originalMethod.apply(this, args);
     }
   });
